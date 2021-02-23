@@ -1,3 +1,3 @@
 # ImageViewer
 
-![ImageViewer](https://github.com/wigsnes/ImageViewer/imageViewer.PNG?raw=true)
+![ImageViewer](https://raw.githubusercontent.com/wigsnes/ImageViewer/main/imageViewer.PNG)
