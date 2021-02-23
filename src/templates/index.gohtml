@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Album</title>
+        <link rel="stylesheet" type="text/css"  href="http://localhost:8080/styles/style.css">
+        <script src="http://localhost:8080/scripts/setColumns.js"></script>
+        <script src="http://localhost:8080/scripts/deleteElement.js"></script>
+        <script src="http://localhost:8080/scripts/changePage.js"></script>
+    </head>
+    <body>
+        <div class="sideView">
+            <a href="http://localhost:8080/{{.BackPath}}?columns={{.Columns}}&page=1" class="backButon">BACK</a>
+            <input id="number" type="number" value="{{.Columns}}" onclick="updateColumns()"><br />
+            <div class="sidenav">
+                {{range .Folders}}
+                    <a href="http://localhost:8080{{.Path}}?columns={{.Column}}&page=1">{{.Name}} ({{.NumberOfFiles}})</a><br />
+                {{end}}
+            </div>
+            <div class="changePage">
+                <div>
+                    <a href="http://localhost:8080/{{.Path}}?columns={{.Columns}}&page={{.PrevPage}}">
+                        <img alt="left-arrow" class="left-arrow" src="http://localhost:8080/images/left-arrow.png" />
+                    </a>
+                </div>
+                <div class="pageIndex">
+                    {{.Page}}/{{.TotalPages}}
+                </div>
+                <div>
+                    <a href="http://localhost:8080/{{.Path}}?columns={{.Columns}}&page={{.NextPage}}">
+                        <img alt="right-arrow" class="right-arrow" src="http://localhost:8080/images/right-arrow.png" />
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="main">
+            <div class="row">
+                {{range .Row}}
+                    {{if .NewCol}}
+                        <div class="column">
+                    {{end}}
+
+                    <div class="element" id="{{.FileName}}">
+                        {{if .IsImage}}
+                            <img style="height: auto;" src="file:///{{.Path}}thumbnail/{{.FileName}}" />
+                        {{else}}
+                            <video controls muted loop autoplay src="file:///{{.Path}}{{.FileName}}" type="{{.Type}}" onclick="this.paused?this.play():this.pause();"></video>
+                        {{end}}
+                        <img alt="delete" class="delete" src="http://localhost:8080/images/delete.png" onclick="deleteFile('{{.FileName}}')"/>
+                    </div>
+
+                    {{if .EndCol}}
+                        </div>
+                    {{end}}
+                {{end}}
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

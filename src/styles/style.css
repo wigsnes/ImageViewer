@@ -1,0 +1,142 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial;
+    display: flex;
+}
+
+img {
+    width: 100%;
+}
+
+video {
+    width: 100%;
+}
+
+.header {
+    text-align: center;
+    padding: 32px;
+}
+
+.row {
+    display: flex;
+    padding: 0 4px;
+}
+
+/* Create four equal columns that sits next to each other */
+.column {
+    flex: 20%;
+    padding: 0 4px;
+}
+
+.column img {
+    margin-top: 8px;
+    vertical-align: middle;
+}
+
+.column video {
+    margin-top: 8px;
+    vertical-align: middle;
+}
+
+/* Responsive layout - makes a two column-layout instead of four columns */
+@media screen and (max-width: 800px) {
+    .column {
+        -ms-flex: 50%;
+        flex: 50%;
+        max-width: 50%;
+    }
+}
+
+/* Responsive layout - makes the two columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 600px) {
+    .column {
+        -ms-flex: 100%;
+        flex: 100%;
+        max-width: 100%;
+    }
+}
+
+/* SIDEBAR */
+.sideView {
+    font-family: "Lato", sans-serif;
+    height: 100vh;
+    width: 250px;
+    display: block;
+    background-color: #111;
+    padding-top: 20px;
+}
+
+.backButon {
+    color: white;
+    font-size: large;
+}
+
+.sidenav {
+    font-family: "Lato", sans-serif;
+    height: Calc(100vh - 96px);
+    z-index: 1;
+    background-color: #111;
+    overflow-x: hidden;
+    padding-top: 20px;
+}
+
+.sidenav a {
+    padding: 6px 8px 6px 16px;
+    text-decoration: none;
+    font-size: 14px;
+    color: #818181;
+}
+
+.sidenav a:hover {
+    color: #f1f1f1;
+}
+
+.main {
+    overflow-x: hidden;
+    height: 100vh;
+    width: 100%;
+}
+
+@media screen and (max-height: 450px) {
+    .sidenav {padding-top: 15px;}
+    .sidenav a {font-size: 18px;}
+}
+
+.element {
+    position: relative;
+}
+
+.delete {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    height: 20px;
+    width: 20px;
+}
+
+.changePage {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px;
+}
+
+.left-arrow {
+    height: 20px;
+    width: 20px;
+    border: solid 2px white;
+    background-color: white;
+}
+.right-arrow {
+    height: 20px;
+    width: 20px;
+    border: solid 2px white;
+    background-color: white;
+}
+
+.pageIndex {
+    color: #f1f1f1;
+}

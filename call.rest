@@ -1,0 +1,15 @@
+### Get page
+GET http://localhost:8080/
+
+### Get styles
+GET http://localhost:8080/styles/style.css
+
+### Get scripts
+GET http://localhost:8080/scripts/deleteElement.js
+
+### Get page album
+GET http://localhost:8080/jpg
+
+### Get delete img
+GET http://localhost:8080/img/delete.png
+Content-Type: image/png
