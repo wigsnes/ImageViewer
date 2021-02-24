@@ -29,7 +29,7 @@ import (
 var (
 	fILEtYPES  = []string{".jpg", ".jpeg", ".png", ".gif", ".webm", ".mp4", ".mov"}
 	defaultCol = "3"
-	pageFiles  = 30
+	pageFiles  = 90
 )
 
 // Row ..
@@ -42,6 +42,7 @@ type Element struct {
 	FileName string
 	Height   string
 	IsImage  bool
+	Columns  int
 	NewCol   bool
 	EndCol   bool
 	Type     string
@@ -148,7 +149,7 @@ func getFilesInFolder(filePath string, columns int, page int) []Element {
 			}
 		}
 		wg.Add(1)
-		go handle(&row, index, newCol, endCol, f.Name(), filePath, &mux, &wg)
+		go handle(&row, index, newCol, endCol, columns, f.Name(), filePath, &mux, &wg)
 
 		newCol = false
 		endCol = false
@@ -159,7 +160,7 @@ func getFilesInFolder(filePath string, columns int, page int) []Element {
 	return row
 }
 
-func handle(row *([]Element), index int, newCol bool, endCol bool, fileName, filePath string, mux *sync.Mutex, wg *sync.WaitGroup) {
+func handle(row *([]Element), index int, newCol bool, endCol bool, columns int, fileName, filePath string, mux *sync.Mutex, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	if !stringo.StringInSlice(fileName, fILEtYPES) {
@@ -171,9 +172,10 @@ func handle(row *([]Element), index int, newCol bool, endCol bool, fileName, fil
 		fileo.ReplaceCharacterInFileName(fmt.Sprintf("%s%s", filePath, fileName), "+", "_")
 		fileo.ReplaceCharacterInFileName(fmt.Sprintf("%s%s", filePath, fileName), " ", "_")
 
-		if _, err := os.Stat(fmt.Sprintf("%sthumbnail/%s", filePath, fileName)); os.IsNotExist(err) {
-			imageo.CreateThumbnail(filePath, fileName, filePath+"thumbnail/", 360, 360)
-		}
+		// removed temporarily to find a better solution
+		// if _, err := os.Stat(fmt.Sprintf("%sthumbnail/%s", filePath, fileName)); os.IsNotExist(err) {
+		// 	imageo.CreateThumbnail(filePath, fileName, filePath+"thumbnail/", 360, 360)
+		// }
 
 		height := imageo.GetImageHeight(fileName, filePath)
 		mux.Lock()
@@ -182,6 +184,7 @@ func handle(row *([]Element), index int, newCol bool, endCol bool, fileName, fil
 			FileName: fileName,
 			File:     filePath,
 			Height:   height,
+			Columns:  columns,
 			IsImage:  true,
 			NewCol:   newCol,
 			EndCol:   endCol,
@@ -337,15 +340,6 @@ func (s *Server) deleteHandler() http.HandlerFunc {
 }
 
 func (s *Server) routes() {
-	// if _, err := os.Stat("src/scripts"); os.IsNotExist(err) {
-	// 	fmt.Println(http.Dir("FAIL"))
-	// }
-	// styles := http.FileServer(http.Dir("src/styles/"))
-	// s.Handle("/styles/{styles}", http.StripPrefix("/styles/", styles)).Methods("GET")
-
-	// scripts := http.FileServer(http.Dir("src/scripts/"))
-	// s.Handle("/scripts/{script}", http.StripPrefix("/scripts/", scripts)).Methods("GET")
-
 	s.HandleFunc("/styles/{style}", s.stylesHandler()).Methods("GET")
 	s.HandleFunc("/scripts/{script}", s.scriptsHandler()).Methods("GET")
 	s.HandleFunc("/images/{img}", s.imagesHandler()).Methods("GET")
