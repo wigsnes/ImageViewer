@@ -41,7 +41,8 @@ func CreateThumbnail(path, img, toPath string, maxWidth, maxHeight uint) {
 	}
 }
 
-func GetImageHeight(fileName, filePath string) string {
+// GetImageDimensions ...
+func GetImageDimensions(fileName, filePath string) (int, int) {
 	file, err := os.Open(filePath + fileName)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
@@ -53,5 +54,5 @@ func GetImageHeight(fileName, filePath string) string {
 		fmt.Fprintf(os.Stderr, "%s: %v\n", filePath+fileName, err)
 	}
 
-	return fmt.Sprintf("%vpx", image.Height)
+	return image.Height, image.Width
 }

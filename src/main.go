@@ -40,11 +40,10 @@ type Element struct {
 	Path     string
 	File     string
 	FileName string
-	Height   string
+	Height   int
+	Width    int
 	IsImage  bool
 	Columns  int
-	NewCol   bool
-	EndCol   bool
 	Type     string
 }
 type data struct {
@@ -107,16 +106,11 @@ func getFilesInFolder(filePath string, columns int, page int) []Element {
 		return []Element{}
 	}
 
-	numInColums := int(math.Floor(float64(numFiles / columns)))
-
 	row := make([]Element, numFiles)
 
 	var wg sync.WaitGroup
 	var mux sync.Mutex
-	newCol := false
-	endCol := false
 	index := 0
-	colNum := 0
 	ii := 0
 	for i, f := range files {
 		if f.IsDir() {
@@ -136,23 +130,9 @@ func getFilesInFolder(filePath string, columns int, page int) []Element {
 			break
 		}
 
-		if numInColums == 0 {
-			endCol = true
-			newCol = true
-		} else {
-			if index%numInColums == numInColums-1 && colNum != columns {
-				endCol = true
-			}
-			if index%numInColums == 0 && colNum != columns {
-				newCol = true
-				colNum++
-			}
-		}
 		wg.Add(1)
-		go handle(&row, index, newCol, endCol, columns, f.Name(), filePath, &mux, &wg)
+		go handle(&row, index, columns, f.Name(), filePath, &mux, &wg)
 
-		newCol = false
-		endCol = false
 		index++
 	}
 
@@ -160,7 +140,7 @@ func getFilesInFolder(filePath string, columns int, page int) []Element {
 	return row
 }
 
-func handle(row *([]Element), index int, newCol bool, endCol bool, columns int, fileName, filePath string, mux *sync.Mutex, wg *sync.WaitGroup) {
+func handle(row *([]Element), index int, columns int, fileName, filePath string, mux *sync.Mutex, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	if !stringo.StringInSlice(fileName, fILEtYPES) {
@@ -177,17 +157,17 @@ func handle(row *([]Element), index int, newCol bool, endCol bool, columns int, 
 		// 	imageo.CreateThumbnail(filePath, fileName, filePath+"thumbnail/", 360, 360)
 		// }
 
-		height := imageo.GetImageHeight(fileName, filePath)
+		height, width := imageo.GetImageDimensions(fileName, filePath)
+
 		mux.Lock()
 		(*row)[index] = Element{
 			Path:     filePath,
 			FileName: fileName,
 			File:     filePath,
 			Height:   height,
+			Width:    width,
 			Columns:  columns,
 			IsImage:  true,
-			NewCol:   newCol,
-			EndCol:   endCol,
 			Type:     "",
 		}
 		mux.Unlock()
@@ -202,14 +182,14 @@ func handle(row *([]Element), index int, newCol bool, endCol bool, columns int, 
 	}
 
 	if stringo.StringInSlice(fileName, []string{".mp4", ".mov", ".webm"}) {
+
 		mux.Lock()
 		(*row)[index] = Element{
 			Path:     filePath,
 			FileName: fileName,
-			Height:   "",
+			Height:   0,
+			Width:    0,
 			IsImage:  false,
-			NewCol:   newCol,
-			EndCol:   endCol,
 			Type:     fileType,
 		}
 		mux.Unlock()

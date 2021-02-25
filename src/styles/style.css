@@ -140,3 +140,21 @@ video {
 .pageIndex {
     color: #f1f1f1;
 }
+
+.container {
+    column-count: 4;
+    column-gap: 10px;
+}
+
+element {
+    margin: 0;
+    display: grid;
+    grid-template-rows: 1fr auto;
+    margin-bottom: 10px;
+    break-inside: avoid;
+}
+
+element > img {
+    grid-row: 1 / -1;
+    grid-column: 1;
+}

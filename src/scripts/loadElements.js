@@ -39,7 +39,6 @@ window.onload = function () {
     refresh_handler();
 
     setTimeout(function () {
-      console.log("loading");
       waiting = false;
     }, 100);
   };
