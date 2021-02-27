@@ -8,6 +8,7 @@
         <script src="http://localhost:8080/scripts/deleteElement.js"></script>
         <script src="http://localhost:8080/scripts/changePage.js"></script>
         <script src="http://localhost:8080/scripts/loadElements.js"></script>
+        <script src="http://localhost:8080/scripts/enlargeImage.js"></script>
     </head>
     <body>
         <div class="sideView">
@@ -35,11 +36,15 @@
             </div>
         </div>
         <div class="main" id="page">
-            <div class="container">
+            <div class="container" style="column-count: {{.Columns}}">
                 {{range .Row}}
                     <div class="element" id="{{.FileName}}">
                         {{if .IsImage}}
-                            <img style="height: calc(((100vw - 237px) / 4) * ({{.Height}} / {{.Width}}));" data-src="file:///{{.Path}}{{.FileName}}" />
+                            <img
+                                style="height: calc(((100vw - 237px) / {{.Columns}}) * ({{.Height}} / {{.Width}}));"
+                                data-src="file:///{{.Path}}{{.FileName}}"
+                                onclick="enlargeImage(this)"
+                            />
                         {{else}}
                             <video controls muted loop autoplay src="file:///{{.Path}}{{.FileName}}" type="{{.Type}}" onclick="this.paused?this.play():this.pause();"></video>
                         {{end}}
