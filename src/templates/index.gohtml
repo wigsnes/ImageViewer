@@ -39,9 +39,9 @@
                 {{range .Row}}
                     <div class="element" id="{{.FileName}}">
                         {{if .IsImage}}
-                            <img style="height: calc(((100vw - (100vh - 96px)) / 4) * ({{.Height}} / {{.Width}}));" data-src="file:///{{.Path}}{{.FileName}}" />
+                            <img style="height: calc(((100vw - 237px) / 4) * ({{.Height}} / {{.Width}}));" data-src="file:///{{.Path}}{{.FileName}}" />
                         {{else}}
-                            <video controls muted loop autoplay data-src="file:///{{.Path}}{{.FileName}}" type="{{.Type}}" onclick="this.paused?this.play():this.pause();"></video>
+                            <video controls muted loop autoplay src="file:///{{.Path}}{{.FileName}}" type="{{.Type}}" onclick="this.paused?this.play():this.pause();"></video>
                         {{end}}
                         <img alt="delete" class="delete" src="http://localhost:8080/images/delete.png" onclick="deleteFile('{{.FileName}}')"/>
                     </div>

@@ -10,7 +10,7 @@ refresh_handler = function (e) {
       elements[i].removeAttribute("data-src");
       setTimeout(
         function (elem) {
-          elem.setAttribute("style", "height: auto;");
+          // elem.setAttribute("style", "height: auto;");
         },
         100,
         elements[i]
