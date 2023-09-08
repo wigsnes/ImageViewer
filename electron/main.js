@@ -25,7 +25,7 @@ let options = {
   properties: ["openDirectory"],
 };
 
-function createWindow() {
+async function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     webPreferences: {
@@ -37,17 +37,13 @@ function createWindow() {
     //some callback.
   });
 
-  let filePath = dialog.showOpenDialog(mainWindow, options);
+  // let filePath = await dialog.showOpenDialog(mainWindow, options);
 
-  // and load the index.html of the app.
-  mainWindow.loadURL("http://localhost:8080/");
+  // execute('go run ../src/main.go -path="' + filePath[0] + "\\", (output) => {
+  //   console.log(output);
+  // });
 
-  // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
-
-  execute('go run ./src/main.go -path="' + filePath[0] + "\\", (output) => {
-    console.log(output);
-  });
+  mainWindow.loadURL("http://localhost:8080");
 
   // Emitted when the window is closed.
   mainWindow.on("closed", function () {

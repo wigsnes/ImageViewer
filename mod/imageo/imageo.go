@@ -7,11 +7,11 @@ import (
 	"log"
 	"os"
 
-	"github.com/nfnt/resize"
+	"github.com/disintegration/imaging"
 )
 
 // CreateThumbnail ...
-func CreateThumbnail(path, img, toPath string, maxWidth, maxHeight uint) {
+func CreateThumbnail(path, img, toPath string, maxWidth, maxHeight int) {
 	file, err := os.Open(fmt.Sprintf("%s%s", path, img))
 	if err != nil {
 		log.Fatal(err)
@@ -22,7 +22,7 @@ func CreateThumbnail(path, img, toPath string, maxWidth, maxHeight uint) {
 		log.Fatal(err, img)
 	}
 
-	newImage := resize.Thumbnail(maxWidth, maxHeight, imgFile, resize.Lanczos3)
+	newImage := imaging.Resize(imgFile, maxWidth, maxHeight, imaging.Lanczos)
 
 	if _, err := os.Stat(toPath); os.IsNotExist(err) {
 		os.Mkdir(toPath, 0777)

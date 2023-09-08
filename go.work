@@ -1,0 +1,9 @@
+go 1.21.1
+
+use (
+	./src
+	./mod/fileo
+	./mod/foldero
+	./mod/imageo
+	./mod/stringo
+)

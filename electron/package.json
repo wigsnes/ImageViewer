@@ -18,10 +18,11 @@
   "author": "GitHub",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "^1.8.8"
+    "electron": "^26.2.0"
   },
   "dependencies": {
     "electron-css-reload": "^1.0.8",
+    "electron-is-dev": "^2.0.0",
     "lazyload": "^2.0.0-beta.2",
     "xmlhttprequest": "^1.8.0"
   }

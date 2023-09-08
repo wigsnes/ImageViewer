@@ -2,10 +2,10 @@ package foldero
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
+	"os"
 
-	"github.com/wigsnes/imageViewer/packages/fileo"
+	"fileo"
 )
 
 type FolderInfo struct {
@@ -22,7 +22,7 @@ func getFiles(path string) {
 func GetFolderInfo(filePath, path string) []FolderInfo {
 	var folders []FolderInfo
 
-	files, err := ioutil.ReadDir(filePath)
+	files, err := os.ReadDir(filePath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -32,7 +32,7 @@ func GetFolderInfo(filePath, path string) []FolderInfo {
 			continue
 		}
 		folderPath := fmt.Sprintf("%s/%s", filePath, f.Name())
-		folderFiles, _ := ioutil.ReadDir(folderPath)
+		folderFiles, _ := os.ReadDir(folderPath)
 		numFiles := fileo.NumberOfFiles(folderFiles)
 		name := f.Name()
 		folders = append(folders, FolderInfo{Path: path + f.Name(), Name: name, NumberOfFiles: numFiles, Column: "3"})

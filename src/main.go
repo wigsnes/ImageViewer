@@ -8,7 +8,6 @@ import (
 	_ "image/jpeg"
 	_ "image/png"
 	"io"
-	"io/ioutil"
 	"log"
 	"math"
 	"net/http"
@@ -20,14 +19,14 @@ import (
 	"github.com/alecthomas/template"
 	"github.com/gorilla/mux"
 
-	"github.com/wigsnes/imageViewer/packages/fileo"
-	"github.com/wigsnes/imageViewer/packages/foldero"
-	"github.com/wigsnes/imageViewer/packages/imageo"
-	"github.com/wigsnes/imageViewer/packages/stringo"
+	"fileo"
+	"foldero"
+	"imageo"
+	"stringo"
 )
 
 var (
-	fILEtYPES  = []string{".jpg", ".jpeg", ".png", ".gif", ".webm", ".mp4", ".mov"}
+	fILEtYPES  = []string{".jpg", ".jpeg", ".png", ".gif", ".webm", ".mp4", ".mov", ".ico"}
 	defaultCol = "3"
 	pageFiles  = 90
 )
@@ -85,7 +84,7 @@ func getQueryValue(values url.Values, value, defaultValue string) string {
 }
 
 func getFilesInFolder(filePath string, columns int, page int) []Element {
-	files, err := ioutil.ReadDir(filePath)
+	files, err := os.ReadDir(filePath)
 	check(err)
 
 	numFiles := fileo.NumberOfFiles(files)
@@ -280,7 +279,7 @@ func (s spaHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	page, err := strconv.Atoi(getQueryValue(values, "page", "1"))
 	check(err)
 
-	files, err := ioutil.ReadDir(filePath)
+	files, err := os.ReadDir(filePath)
 	check(err)
 
 	totalPages := int(math.Ceil(float64(fileo.NumberOfFiles(files)) / float64(pageFiles)))
@@ -327,7 +326,7 @@ func (s *Server) routes() {
 
 	s.HandleFunc("/{file}", s.deleteHandler()).Methods("DELETE")
 
-	spa := spaHandler{tpl: template.Must(template.ParseGlob("src/templates/*.gohtml")), server: s}
+	spa := spaHandler{tpl: template.Must(template.ParseGlob("./src/templates/*.gohtml")), server: s}
 	s.PathPrefix("/").Handler(spa)
 }
 
@@ -335,6 +334,7 @@ func newServer(path string) *Server {
 	s := &Server{
 		Router: mux.NewRouter(),
 		folder: path,
+		path:   path,
 	}
 	s.routes()
 	return s
@@ -342,7 +342,8 @@ func newServer(path string) *Server {
 
 func main() {
 	fmt.Println("Start!")
-	path := flag.String("path", "C:\\", "path of the folder you want to open")
+	wd, _ := os.Getwd()
+	path := flag.String("path", wd, "path of the folder you want to open")
 	flag.Parse()
 
 	fmt.Println(*path)

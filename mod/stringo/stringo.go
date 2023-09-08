@@ -11,7 +11,7 @@ func StringInSlice(a string, list []string) bool {
 	return false
 }
 
-func StringContains(a string, b string) bool {
+func StringContains(a, b string) bool {
 	if strings.Contains(strings.ToLower(a), strings.ToLower(b)) {
 		return true
 	}

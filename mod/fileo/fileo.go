@@ -3,11 +3,12 @@ package fileo
 import (
 	"bufio"
 	"fmt"
+	"io/fs"
 	"log"
 	"os"
 	"strings"
 
-	"github.com/wigsnes/imageViewer/packages/stringo"
+	"stringo"
 )
 
 func OpenFile(path string) *os.File {
@@ -98,7 +99,7 @@ func RemoveFile(filePath string) error {
 	return os.Rename(filePath, trash)
 }
 
-func NumberOfFiles(files []os.FileInfo) int {
+func NumberOfFiles(files []fs.DirEntry) int {
 	numFiles := 0
 	for _, f := range files {
 		if f.IsDir() {
