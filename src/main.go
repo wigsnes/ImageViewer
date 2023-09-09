@@ -3,7 +3,6 @@ package main
 // npm start
 
 import (
-	"flag"
 	"fmt"
 	_ "image/jpeg"
 	_ "image/png"
@@ -213,9 +212,7 @@ type spaHandler struct {
 
 func (s *Server) stylesHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println(r)
 		style, _ := mux.Vars(r)["style"]
-		fmt.Println(style)
 		css, err := os.Open(fmt.Sprintf("./src/styles/%s", style))
 		if err != nil {
 			log.Fatal(err)
@@ -228,9 +225,7 @@ func (s *Server) stylesHandler() http.HandlerFunc {
 
 func (s *Server) scriptsHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println(r)
 		script, _ := mux.Vars(r)["script"]
-		fmt.Println(script)
 		src, err := os.Open(fmt.Sprintf("./src/scripts/%s", script))
 		if err != nil {
 			log.Fatal(err)
@@ -263,13 +258,11 @@ func (s *Server) exitHandler() http.HandlerFunc {
 func (s spaHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	path := r.URL.Path
+	fmt.Println("URL Path: ", path)
 	if path[len(path)-1] != '/' {
 		path += "/"
 	}
 	s.server.path = path
-
-	filePath := fmt.Sprintf("%s%s", s.server.folder, path)
-	fmt.Println("FilePath: ", filePath)
 
 	values := r.URL.Query()
 
@@ -279,7 +272,7 @@ func (s spaHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	page, err := strconv.Atoi(getQueryValue(values, "page", "1"))
 	check(err)
 
-	files, err := os.ReadDir(filePath)
+	files, err := os.ReadDir(path)
 	check(err)
 
 	totalPages := int(math.Ceil(float64(fileo.NumberOfFiles(files)) / float64(pageFiles)))
@@ -293,8 +286,8 @@ func (s spaHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := data{
-		Folders:    foldero.GetFolderInfo(filePath, path),
-		Row:        getFilesInFolder(filePath, columns, page),
+		Folders:    foldero.GetFolderInfo(path),
+		Row:        getFilesInFolder(path, columns, page),
 		Columns:    columns,
 		Path:       path,
 		BackPath:   removeLastPath(path),
@@ -330,23 +323,17 @@ func (s *Server) routes() {
 	s.PathPrefix("/").Handler(spa)
 }
 
-func newServer(path string) *Server {
+func newServer() *Server {
 	s := &Server{
 		Router: mux.NewRouter(),
-		folder: path,
-		path:   path,
+		folder: "/",
+		path:   "/",
 	}
 	s.routes()
 	return s
 }
 
 func main() {
-	fmt.Println("Start!")
-	wd, _ := os.Getwd()
-	path := flag.String("path", wd, "path of the folder you want to open")
-	flag.Parse()
-
-	fmt.Println(*path)
-	srv := newServer(*path)
+	srv := newServer()
 	log.Fatal(http.ListenAndServe("localhost:8080", srv))
 }
