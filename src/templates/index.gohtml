@@ -10,6 +10,7 @@
         <script src="http://localhost:8080/scripts/changePage.js"></script>
         <script src="http://localhost:8080/scripts/loadElements.js"></script>
         <script src="http://localhost:8080/scripts/enlargeImage.js"></script>
+        <script src="https://unpkg.com/htmx.org@1.9.5"></script>
     </head>
     <body>
         <div class="sideView">
@@ -42,6 +43,7 @@
                     <div class="element" id="{{.FileName}}">
                         {{if .IsImage}}
                             <img
+                                class="imageFile"
                                 style="height: calc(((100vw - 237px) / {{.Columns}}) * ({{.Height}} / {{.Width}}));"
                                 data-src="file:///{{.Path}}{{.FileName}}"
                                 onclick="enlargeImage(this)"
@@ -49,7 +51,7 @@
                         {{else}}
                             <video controls muted loop autoplay src="file:///{{.Path}}{{.FileName}}" type="{{.Type}}" onclick="this.paused?this.play():this.pause();"></video>
                         {{end}}
-                        <img alt="delete" class="delete" src="http://localhost:8080/images/delete.png" onclick="deleteFile('{{.FileName}}')"/>
+                        <img alt="delete" class="delete" src="http://localhost:8080/images/delete.png" hx-post="/delete" hx-swap="outerHTML" hx-target="closest div" hx-vals='{"fileName": "{{.FileName}}"}' />
                     </div>
                 {{end}}
                 </div>

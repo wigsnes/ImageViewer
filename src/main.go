@@ -302,9 +302,10 @@ func (s spaHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) deleteHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		file, _ := mux.Vars(r)["file"]
-		fmt.Println("Delete file: ", s.folder+s.path+file)
-		err := fileo.RemoveFile(s.folder + s.path + file)
+		file := r.FormValue("fileName")
+		fmt.Println("File: ", file)
+		fmt.Println("Delete file: ", s.path+file)
+		err := fileo.RemoveFile(s.path + file)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -316,6 +317,8 @@ func (s *Server) routes() {
 	s.HandleFunc("/scripts/{script}", s.scriptsHandler()).Methods("GET")
 	s.HandleFunc("/images/{img}", s.imagesHandler()).Methods("GET")
 	s.HandleFunc("/exit", s.exitHandler()).Methods("GET")
+
+	s.HandleFunc("/delete", s.deleteHandler()).Methods("POST")
 
 	s.HandleFunc("/{file}", s.deleteHandler()).Methods("DELETE")
 
