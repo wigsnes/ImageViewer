@@ -44,10 +44,10 @@
                         {{if .IsImage}}
                             <img
                                 class="imageFile"
-                                style="height: calc(((100vw - 237px) / {{.Columns}}) * ({{.Height}} / {{.Width}}));"
                                 data-src="file:///{{.Path}}{{.FileName}}"
                                 onclick="enlargeImage(this)"
                             />
+                            {{/* style="height: calc(((100vw - 237px) / {{.Columns}}) * ({{.Height}} / {{.Width}}));" */}}
                         {{else}}
                             <video controls muted loop autoplay src="file:///{{.Path}}{{.FileName}}" type="{{.Type}}" onclick="this.paused?this.play():this.pause();"></video>
                         {{end}}

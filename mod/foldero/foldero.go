@@ -19,7 +19,7 @@ func getFiles(path string) {
 
 }
 
-func GetFolderInfo(filePath string) []FolderInfo {
+func GetFolderInfo(filePath string, filter []string) []FolderInfo {
 	var folders []FolderInfo
 
 	files, err := os.ReadDir(filePath)
@@ -33,7 +33,7 @@ func GetFolderInfo(filePath string) []FolderInfo {
 		}
 		folderPath := fmt.Sprintf("%s/%s", filePath, f.Name())
 		folderFiles, _ := os.ReadDir(folderPath)
-		numFiles := fileo.NumberOfFiles(folderFiles)
+		numFiles := fileo.NumberOfFiles(folderFiles, filter)
 		name := f.Name()
 		folders = append(folders, FolderInfo{Path: filePath + f.Name(), Name: name, NumberOfFiles: numFiles, Column: "3"})
 	}

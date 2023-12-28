@@ -99,17 +99,30 @@ func RemoveFile(filePath string) error {
 	return os.Rename(filePath, trash)
 }
 
-func NumberOfFiles(files []fs.DirEntry) int {
+func NumberOfFiles(files []fs.DirEntry, filter []string) int {
 	numFiles := 0
 	for _, f := range files {
 		if f.IsDir() {
 			continue
 		}
-		if stringo.StringInSlice(f.Name(), []string{".jpg", ".jpeg", ".png", ".gif", ".webm", ".mp4", ".mov"}) {
+		if stringo.StringInSlice(f.Name(), filter) {
 			numFiles++
 		}
 	}
 	return numFiles
+}
+
+func FilterFiles(files []fs.DirEntry, filter []string) []fs.DirEntry {
+	var temp []fs.DirEntry
+	for _, f := range files {
+		if f.IsDir() {
+			continue
+		}
+		if stringo.StringInSlice(f.Name(), filter) {
+			temp = append(temp, f)
+		}
+	}
+	return temp
 }
 
 // ReplaceCharacter - replace all characters of type from in file and replace with to.

@@ -27,7 +27,7 @@ import (
 var (
 	fILEtYPES  = []string{".jpg", ".jpeg", ".png", ".gif", ".webm", ".mp4", ".mov", ".ico"}
 	defaultCol = "3"
-	pageFiles  = 90
+	pageFiles  = 40
 )
 
 // Row ..
@@ -86,52 +86,32 @@ func getFilesInFolder(filePath string, columns int, page int) []Element {
 	files, err := os.ReadDir(filePath)
 	check(err)
 
-	numFiles := fileo.NumberOfFiles(files)
+	fFiles := fileo.FilterFiles(files, fILEtYPES)
+	numFiles := len(fFiles)
 
 	if numFiles == 0 {
 		return []Element{}
 	}
 
+	numFilesOnPage := pageFiles
+
+	// if there is not enough files to fill page, set number of files to how many files can fit.
 	if (numFiles / pageFiles) <= page {
-		numFiles = numFiles - (pageFiles * (page - 1))
+		numFilesOnPage = numFiles - (pageFiles * (page - 1))
+		if numFilesOnPage <= 0 {
+			return []Element{}
+		}
 	}
 
-	if numFiles > pageFiles {
-		numFiles = pageFiles
-	}
-
-	if numFiles < 0 {
-		return []Element{}
-	}
-
-	row := make([]Element, numFiles)
+	row := make([]Element, numFilesOnPage)
 
 	var wg sync.WaitGroup
 	var mux sync.Mutex
-	index := 0
-	ii := 0
-	for i, f := range files {
-		if f.IsDir() {
-			ii++
-			continue
-		}
-
-		if !stringo.StringInSlice(f.Name(), fILEtYPES) {
-			ii++
-			continue
-		}
-
-		if (i - ii) <= numFiles*(page-1)-1 {
-			continue
-		}
-		if (i - ii) >= (numFiles*(page-1))+numFiles {
-			break
-		}
-
+	start := pageFiles * (page - 1)
+	end := (pageFiles * (page - 1)) + numFilesOnPage
+	for i, f := range fFiles[start:end] {
 		wg.Add(1)
-		go handle(&row, index, columns, f.Name(), filePath, &mux, &wg)
-
-		index++
+		go handle(&row, i, columns, f.Name(), filePath, &mux, &wg)
 	}
 
 	wg.Wait()
@@ -140,10 +120,6 @@ func getFilesInFolder(filePath string, columns int, page int) []Element {
 
 func handle(row *([]Element), index int, columns int, fileName, filePath string, mux *sync.Mutex, wg *sync.WaitGroup) {
 	defer wg.Done()
-
-	if !stringo.StringInSlice(fileName, fILEtYPES) {
-		return
-	}
 
 	if stringo.StringInSlice(fileName, []string{".jpg", ".jpeg", ".png"}) {
 
@@ -156,6 +132,13 @@ func handle(row *([]Element), index int, columns int, fileName, filePath string,
 		// }
 
 		height, width := imageo.GetImageDimensions(fileName, filePath)
+
+		if height == 0 {
+			height = 1
+		}
+		if width == 0 {
+			width = 1
+		}
 
 		mux.Lock()
 		(*row)[index] = Element{
@@ -275,7 +258,7 @@ func (s spaHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	files, err := os.ReadDir(path)
 	check(err)
 
-	totalPages := int(math.Ceil(float64(fileo.NumberOfFiles(files)) / float64(pageFiles)))
+	totalPages := int(math.Ceil(float64(fileo.NumberOfFiles(files, fILEtYPES)) / float64(pageFiles)))
 	nextPage := page + 1
 	if nextPage > totalPages {
 		nextPage = 1
@@ -286,7 +269,7 @@ func (s spaHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := data{
-		Folders:    foldero.GetFolderInfo(path),
+		Folders:    foldero.GetFolderInfo(path, fILEtYPES),
 		Row:        getFilesInFolder(path, columns, page),
 		Columns:    columns,
 		Path:       path,
